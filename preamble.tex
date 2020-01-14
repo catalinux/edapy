@@ -1,0 +1,38 @@
+% Table of contents formatting
+\renewcommand{\contentsname}{Table of Contents}
+\setcounter{tocdepth}{1}
+ 
+% Headers and page numbering 
+\usepackage{fancyhdr}
+\pagestyle{plain}
+ 
+% Fonts and typesetting
+\setmainfont{TeX Gyre Pagella}
+\setsansfont{Verdana}
+
+% Set figure legends and captions to be smaller sized sans serif font
+\usepackage[font={footnotesize,sf}]{caption}
+
+\usepackage{siunitx}
+
+% Adjust spacing between lines to 1.5
+\usepackage{setspace}
+\onehalfspacing
+\raggedbottom
+
+% Set margins
+\usepackage[top=1.25in,bottom=1.25in]{geometry}
+
+
+% Set colour of links to black so that they don't show up when printed
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=black}
+
+% Tables
+\usepackage{booktabs}
+\usepackage{threeparttable}
+\usepackage{array}
+\newcolumntype{x}[1]{%
+>{\centering\arraybackslash}m{#1}}%
+
+\usepackage[table,xcdraw]{xcolor}
