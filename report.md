@@ -41,7 +41,8 @@ First we look at the price column, the value that I try to predict
 ![HEAT](./img/cat_var_HEAT.png){width=50%} ![AC](./img/cat_var_AC.png){width=50%} 
 ![QUALIFIED](./img/cat_var_QUALIFIED.png){width=50%} ![STRUCT](./img/cat_var_STRUCT.png){width=50%}
 ![SOURCE](./img/cat_var_SOURCE.png){width=50%} ![WARD](./img/cat_var_WARD.png){width=50%} 
-![QUADRANT](./img/cat_var_QUADRANT.png){width=50%} 
+![QUADRANT](./img/cat_var_QUADRANT.png){width=50%} ![ASSESSMENT_SUBNBHD](./img/cat_var_ASSESSMENT_SUBNBHD.png){width=50%}
+
 
 ### What type of covariation occurs between my variables?
 
@@ -103,10 +104,16 @@ Varianta between columns can be seen in the figure below
 Let's see how categorical columns coralate with PRICE column 
 
 
-![HEAT](./img/cat_var_price_HEAT.png){width=50%} ![AC](./img/cat_var_price_AC.png){width=50%}
-![QUALIFIED](./img/cat_var_price_QUALIFIED.png){width=50%} ![STRUCT](./img/cat_var_price_STRUCT.png){width=50%} 
-![SOURCE](./img/cat_var_price_SOURCE.png){width=50%} ![WARD](./img/cat_var_price_WARD.png){width=50%} 
-![QUADRANT](./img/cat_var_price_QUADRANT.png){width=50%} 
+![HEAT](./img/cat_bivar_price_HEAT.png){width=50%} ![AC](./img/cat_bivar_price_AC.png){width=50%}
+![QUALIFIED](./img/cat_bivar_price_QUALIFIED.png){width=50%} ![STRUCT](./img/cat_bivar_price_STRUCT.png){width=50%} 
+![SOURCE](./img/cat_bivar_price_SOURCE.png){width=50%} ![WARD](./img/cat_bivar_price_WARD.png){width=50%} 
+![QUADRANT](./img/cat_bivar_price_QUADRANT.png){width=50%} ![ASSESSMENT_NBHD](./img/cat_bivar_price_ASSESSMENT_NBHD.png){width=50%}
+
+We can see that per neighbourhod price range differs so we we zoom it a little bit per median price
+
+ 
+ ![Meian price per neighbourhood ](./img/zona_median.png)
+
 
 ## Data processing
 

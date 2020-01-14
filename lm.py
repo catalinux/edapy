@@ -21,8 +21,9 @@ missing
 np.round(100 * missing[missing > 0] / df.__len__(), 3).to_clipboard()
 
 df = df.drop(
-    ["SALEDATE", "STYLE", "GRADE", "CNDTN", "EXTWALL", "ROOF", "INTWALL", "CMPLX_NUM", "LIVING_GBA", "CITY", "STATE",
-     "NATIONALGRID", "ASSESSMENT_SUBNBHD"], axis=1)
+    ["ASSESSMENT_SUBNBHD", "SALEDATE", "STYLE", "GRADE", "CNDTN", "EXTWALL", "ROOF", "INTWALL", "CMPLX_NUM",
+     "LIVING_GBA", "CITY", "STATE",
+     "NATIONALGRID"], axis=1)
 
 corr = df.corr()
 ax = sns.heatmap(
@@ -58,7 +59,7 @@ numerical = ['BATHRM', 'HF_BATHRM', 'NUM_UNITS', 'ROOMS', 'BEDRM', 'AYB', 'YR_RM
              'SALE_NUM', 'GBA',
              'BLDG_NUM', 'KITCHENS', 'FIREPLACES', 'USECODE', 'LANDAREA', 'ZIPCODE', 'LATITUDE', 'LONGITUDE']
 
-categorical = ['HEAT', 'AC', 'QUALIFIED', 'STRUCT', 'SOURCE', 'WARD', 'QUADRANT']
+categorical = ['HEAT', 'AC', 'QUALIFIED', 'STRUCT', 'SOURCE', 'WARD', 'QUADRANT', "ASSESSMENT_NBHD"]
 
 for var in categorical:
     cp = sns.countplot(df[var])
@@ -67,14 +68,20 @@ for var in categorical:
         label.set_rotation(45)
     cp.figure.savefig(title)
     cp.set_xlabel(var, fontsize=14)
-    print("![" + var + "](./" + title + "){width=33%}")
+    print("![" + var + "](./" + title + "){width=50%}")
 
 for var in categorical:
     sns_plot = sns.boxplot(x=var, y='PRICE', data=df)
-    title = 'img/cat_var_price_' + var + '.png'
-    for label in sns_plot.get_xticklabels():
-        label.set_rotation(45)
+    title = 'img/cat_bivar_price_' + var + '.png'
     sns_plot.figure.savefig(title)
     sns_plot.set_xlabel(var, fontsize=14)
-    print("![" + var + "](./" + title + "){width=33%}")
+    for label in cp.get_xticklabels():
+        label.set_rotation(45)
+    print("![" + var + "](./" + title + "){width=50%}")
 
+sorted_nb = df.groupby(['ASSESSMENT_NBHD'])['PRICE'].median().sort_values()
+zona=sns.boxplot(x=df['ASSESSMENT_NBHD'], y=df['PRICE'], order=list(sorted_nb.index))
+for label in zona.get_xticklabels():
+    label.set_rotation(45)
+
+zona.figure.savefig("img/zona_median.png")
