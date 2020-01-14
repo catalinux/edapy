@@ -40,12 +40,11 @@ ax.set_xticklabels(
 plt.show()
 
 df = df[df["HEAT"] != 'No Data']
-
+sns.distplot(df['PRICE'], norm_hist=True, kde=False, bins=20, hist_kws={"alpha": 1}).set(xlabel='Sale Price',  ylabel='Count')
 df = df[df["PRICE"] < 1200000]
-sns.set(style='whitegrid', palette="deep", font_scale=1.1, rc={"figure.figsize": [8, 5]})
-sns.distplot(
-    df['PRICE'], norm_hist=True, kde=False, bins=20, hist_kws={"alpha": 1}
-).set(xlabel='Sale Price', ylabel='Count');
+sns.distplot(df['PRICE'], norm_hist=True, kde=False, bins=20, hist_kws={"alpha": 1}).set(xlabel='Sale Price',
+                                                                                         ylabel='Count')
+
 
 plt.show()
 
@@ -80,7 +79,7 @@ for var in categorical:
     print("![" + var + "](./" + title + "){width=50%}")
 
 sorted_nb = df.groupby(['ASSESSMENT_NBHD'])['PRICE'].median().sort_values()
-zona=sns.boxplot(x=df['ASSESSMENT_NBHD'], y=df['PRICE'], order=list(sorted_nb.index))
+zona = sns.boxplot(x=df['ASSESSMENT_NBHD'], y=df['PRICE'], order=list(sorted_nb.index))
 for label in zona.get_xticklabels():
     label.set_rotation(45)
 

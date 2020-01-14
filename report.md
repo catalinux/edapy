@@ -24,18 +24,16 @@ table(sapply(df, class))
 
 ### Looking at the target feature
 
-There are 4655 outlier values. (what should with do with them?). First I removed it
+There are 4655 outlier values. (what should with do with them?). An option would be  removed them as they represent less than 5% of data
 
 
-![price hist](./images/price_hist_without_outliers.png)
 
 ### What type of variation occurs within my variables?
 
 First we look at the price column, the value that I try to predict
 
 
-![price hist](./images/price_hist_with_outliers.png){width=50%} ![price hist](./images/price_hist_without_outliers.png){width=50%}
-  ![price hist](./images/hist_price_log.png){width=50%} 
+![price hist](./img/price_hist_with_outliers.png){width=33%} ![price hist](./img/price_hist_without_outliers.png){width=33%}   ![price hist](./img/hist_price_log.png){width=33%} 
 
 
 ![HEAT](./img/cat_var_HEAT.png){width=50%} ![AC](./img/cat_var_AC.png){width=50%} 
