@@ -1,11 +1,14 @@
 import pandas as pd
 import numpy as np
+from sklearn import metrics
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn import linear_model
 from sklearn import metrics as m
+from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.tree import DecisionTreeRegressor
@@ -22,64 +25,15 @@ from sklearn.feature_selection import RFE
 from sklearn.linear_model import LogisticRegression
 from sklearn.compose import ColumnTransformer
 
-dataset = pd.read_csv('dc-residential-properties/DC_Properties.csv')
+from util import get_model_stats
+from util import get_data
 
-df = dataset[np.isfinite(dataset['PRICE'])]
-# unuseful columns
-df = df.drop(['Unnamed: 0', 'GIS_LAST_MOD_DTTM', "FULLADDRESS", "CENSUS_BLOCK", "SQUARE", "CENSUS_TRACT",
-              "CENSUS_BLOCK"], axis=1)
-# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
-
-df = df.drop(
-    ["ASSESSMENT_SUBNBHD", "SALEDATE", "STYLE", "GRADE", "CNDTN", "EXTWALL", "ROOF", "INTWALL", "CMPLX_NUM",
-     "LIVING_GBA", "CITY", "STATE", "X", "Y",
-     "NATIONALGRID"], axis=1)
-
-df = df[df["HEAT"] != 'No Data']
-df = df[df["PRICE"] < 1200000]
-
-plt.show()
-
-columns = pd.DataFrame({'column_names': df.columns, 'datatypes': df.dtypes})
-columns.sort_values(by="datatypes")
-
-
-def remove_outlier(var):
-    return df[np.abs(df[var] - df[var].mean()) < 5 * df[var].std()]
-
-
-df = df[df['QUALIFIED'] != 'U']
-
-df = remove_outlier("FIREPLACES")
-df = remove_outlier("LANDAREA")
-
-# data process
-# Some feature engineering
-df['FEAT_BEDROOMS_PER_ROOM'] = df['BEDRM'] / df['ROOMS']
-df['FEAT_STORIES_PER_GBA'] = df['STORIES'] / df['GBA']
-df['FEAT_YARD'] = df['LANDAREA'] - df['GBA']
-df['FEAT_AYB'] = df['AYB'].apply(lambda x: 2020 - x)
-df['FEAT_EYB'] = df['EYB'].apply(lambda x: 2020 - x)
-
-
-def get_model_stats(name, y_true, y_pred):
-    stats = {
-        "name": name,
-        "EV": metrics.explained_variance_score(y_true, y_pred),
-        "MAE": metrics.mean_absolute_error(y_true, y_pred),
-        "r2": metrics.r2_score(y_true, y_pred),
-        "RMSE": np.sqrt(metrics.mean_squared_error(y_true, y_pred)),
-        "max_error": metrics.max_error(y_true, y_pred)
-    }
-    return stats
-
-
+df = get_data()
 x = []
 
 cat_df_list = list(df.select_dtypes(include=['object']))
 num_df_list = list(df.select_dtypes(include=['float64', 'int64']))
 num_df_list.remove('PRICE')
-# num_df_list.remove('PRICE')
 
 num_pipeline = Pipeline([
     ('imputer', SimpleImputer(strategy='median')),
@@ -99,6 +53,7 @@ X_pipeline = ColumnTransformer([
 ])
 
 X = df.drop(columns=['PRICE'])
+X_numeric = X[num_df_list]
 y = df['PRICE']
 
 # Split to train/test sets
@@ -118,17 +73,17 @@ lin_reg = LinearRegression()
 lin_reg.fit(X_train_prepared, y_train)
 
 preds = lin_reg.predict(X_train_prepared)
-
-x.append(get_model_stats('linear_regression', y_train, preds))
-
-
+preds_test = lin_reg.predict(X_test_prepared)
+x.append(get_model_stats('linear_regression', y_test, preds_test))
 
 from sklearn.preprocessing import PolynomialFeatures
+
+
 
 # pipeline for numerical features turned to polynomials
 poly_pipeline = Pipeline([
     ('imputer', SimpleImputer(strategy='median')),
-    #    ('poly_features', PolynomialFeatures(degree=5, include_bias=False)),
+  #  ('poly_features', PolynomialFeatures(degree=2, include_bias=False)),
     ('std_scaler', StandardScaler()),
 
 ])
@@ -145,37 +100,10 @@ X_poly_pipeline = ColumnTransformer([
     ('num', poly_pipeline, num_df_list),
 ])
 
-# Prep data with pipeline
 
-# Pipeline takes an excessively long time to transform data
-# Has not been able to complete on my machine
-X_poly = X_poly_pipeline.fit_transform(X)  # Whole set ran through pipeline for cross-val
-X_train_poly = X_poly_pipeline.transform(X_train)
-X_test_poly = X_poly_pipeline.transform(X_test)
+# gradient boost
 
-poly_reg = LinearRegression()
-poly_reg.fit(X_train_poly, y_train)
-
-preds = lin_reg.predict(X_train_poly)
-x.append(get_model_stats('polynomial_regression', y_train, preds))
-
-# bayes
-
-X_bayes_pipeline = ColumnTransformer([
-    ('cat', cat_pipeline, cat_df_list),
-    ('num', poly_pipeline, num_df_list),
-])
-
-X_bayes = X_bayes_pipeline.fit_transform(X)  # Whole set ran through pipeline for cross-val
-X_train_bayes = X_bayes_pipeline.transform(X_train)
-X_test_bayes = X_bayes_pipeline.transform(X_test)
-baesianReg = linear_model.BayesianRidge()
-baesianReg.fit(X_train_bayes.todense(),y_train)
-preds = baesianReg.predict(X_train_bayes)
-x.append(get_model_stats('bayesian_regression', y_train, preds))
-
-
-
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 
 X_gb_pipeline = ColumnTransformer([
@@ -186,17 +114,18 @@ X_gb_pipeline = ColumnTransformer([
 X_gb = X_gb_pipeline.fit_transform(X)  # Whole set ran through pipeline for cross-val
 X_train_gb = X_gb_pipeline.transform(X_train)
 X_test_gb = X_gb_pipeline.transform(X_test)
-model = GradientBoostingRegressor(n_estimators=400,random_state=21)
+model = GradientBoostingRegressor(n_estimators=400, random_state=21)
 kfold = KFold(n_splits=10, random_state=21)
 
 model.fit(X_train_gb, y_train)
-preds =model.predict(X_train_gb)
+preds = model.predict(X_train_gb)
 x.append(get_model_stats('grad_boost', y_train, preds))
 
+print("Random Search")
 
 loss = ['ls', 'lad', 'huber']
-n_estimators = [100, 500, 900, 1100, 1500]
-max_depth = [2, 3, 5, 10, 15]
+n_estimators = [300, 500, 600]
+max_depth = [10, 15]
 min_samples_leaf = [1, 2, 4, 6, 8]
 min_samples_split = [2, 4, 6, 10]
 max_features = ['auto', 'sqrt', 'log2', None]
@@ -208,15 +137,15 @@ hyperparameter_grid = {'loss': loss,
                        'min_samples_split': min_samples_split,
                        'max_features': max_features}
 
-model = GradientBoostingRegressor(n_estimators=400,random_state=21)
+model = GradientBoostingRegressor(n_estimators=400, random_state=21)
 rs = RandomizedSearchCV(estimator=model,
-            param_distributions=hyperparameter_grid,
-            cv=4, n_iter=50,
-            scoring = 'neg_mean_absolute_error',n_jobs = 4,
-            verbose = 5,
-            return_train_score = True,
-            random_state=42)
-rs.fit(X_train_gb, y_train)
+                        param_distributions=hyperparameter_grid,
+                        cv=4, n_iter=50,
+                        scoring='neg_mean_absolute_error', n_jobs=4,
+                        verbose=5,
+                        return_train_score=True,
+                        random_state=42)
+# rs.fit(X_train_gb, y_train)
 
 # means = grid_result.cv_results_['mean_test_score']
 # stds = grid_result.cv_results_['std_test_score']
@@ -225,3 +154,5 @@ rs.fit(X_train_gb, y_train)
 #     print("%f (%f) with: %r" % (mean, stdev, param))
 #
 # print("Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
+
+pd.DataFrame.from_dict(x).round(2).to_clipboard()
