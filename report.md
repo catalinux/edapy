@@ -170,7 +170,7 @@ From numerical features only 4 components explain 99% of the variance
 
 ### Some intesting plot: plot Map
 
-[plot on map](./img/imgplot.png)
+![plot on map](./img/imgplot.png)
 
 
 Observation: we can see that North-West has expensive houses
