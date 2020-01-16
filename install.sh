@@ -1,1 +1,1 @@
-pip3.7 install matplotlib numpy pandas sklearn seaborn
+pip3.7 install matplotlib numpy pandas sklearn seaborn xgboost gmaps googlemaps

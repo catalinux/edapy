@@ -39,13 +39,12 @@ X_rf_pipeline = ColumnTransformer([
 X_rf = X_rf_pipeline.fit_transform(X)
 X_train_rf = X_rf_pipeline.transform(X_train)
 X_test_rf = X_rf_pipeline.transform(X_test)
-param_dist = {"learning_rate": [0.2, 0.4, 0.7],
-              "gamma": [2, 3, 4],
-              "max_depth": [10, 15, 30, 50, 60],
-              "n_estimators": [10, 50, 100, 150, 400],
-              "min_child_weight": [1, 3, 5, 7, 11, 17]}
+param_dist = {
+              "subsamble": [7, 8, 9, 10, 11],
+              "colsample_bytree ": [7, 8, 9, 10, 11],
+              }
 
-XGB_RS = RandomizedSearchCV(xgb.XGBRegressor(), param_distributions=param_dist, n_iter=150, verbose=10, n_jobs=64)
+XGB_RS = RandomizedSearchCV(xgb.XGBRegressor(learning_rate=0.2,gamma=3,max_depth=10,n_estimators=100,min_child_weight=11), param_distributions=param_dist, n_iter=150, verbose=10, n_jobs=64)
 XGB_RS.fit(X_train_rf, y_train)
 
 print("\n========================================================")
@@ -55,3 +54,6 @@ print("\n The best estimator across ALL searched params:\n", XGB_RS.best_estimat
 print("\n The best score across ALL searched params:\n", XGB_RS.best_score_)
 print("\n The best parameters across ALL searched params:\n", XGB_RS.best_params_)
 print("\n ========================================================")
+
+# best 1
+#  {'n_estimators': 100, 'min_child_weight': 11, 'max_depth': 10, 'learning_rate': 0.2, 'gamma': 3}
