@@ -58,3 +58,13 @@ from scipy import stats
 
 print(x)
 print(df.shape)
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+plt.figure()
+sns.distplot(pow(y_pred_test,2),bins=100)
+plt.show()
+
+plt.figure()
+sns.distplot(pow(y_test,2), bins=100)
+plt.show()

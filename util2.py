@@ -32,8 +32,12 @@ def remove_outlier(df, var):
 def get_data():
     dataset = pd.read_csv('dc-residential-properties/DC_Properties.csv')
 
+
     df = dataset[np.isfinite(dataset['PRICE'])]
     df = df[df['QUALIFIED'] != 'U']
+
+    df = df[df["PRICE"] < 1200000]
+    df = df[df["PRICE"] > 50000]
 
     # unuseful columns
     df = df.drop(['Unnamed: 0', 'GIS_LAST_MOD_DTTM', "FULLADDRESS", "CENSUS_BLOCK", "SQUARE", "CENSUS_TRACT",

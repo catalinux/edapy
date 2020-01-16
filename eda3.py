@@ -5,7 +5,8 @@ import gmaps.datasets
 import googlemaps
 import gmaps
 
-API_KEY = 'AIzaSyB3ERaF6vtAQOmKZs-_0SpvgsMlLFBjCcU'
+
+API_KEY = 'set'
 
 df = pd.read_csv('dc-residential-properties/DC_Properties.csv')
 df.dropna(subset=['LATITUDE'],inplace= True)
