@@ -1,0 +1,1 @@
+pip3.7 install matplotlib numpy pandas sklearn seaborn
