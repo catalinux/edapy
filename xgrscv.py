@@ -1,6 +1,5 @@
 import numpy as np
 import xgboost as xgb
-from scipy.stats import uniform
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import RandomizedSearchCV
@@ -8,8 +7,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 
-from util2 import get_data
-from util2 import get_model_stats
+from util import get_data
 
 df = get_data()
 x = []
@@ -41,12 +39,19 @@ X_rf_pipeline = ColumnTransformer([
 X_rf = X_rf_pipeline.fit_transform(X)
 X_train_rf = X_rf_pipeline.transform(X_train)
 X_test_rf = X_rf_pipeline.transform(X_test)
+param_dist = {"learning_rate": [0.2, 0.4, 0.7],
+              "gamma": [2, 3, 4],
+              "max_depth": [10, 15, 30, 50, 60],
+              "n_estimators": [10, 50, 100, 150, 400],
+              "min_child_weight": [1, 3, 5, 7, 11, 17]}
 
-m = xgb.XGBRegressor(learning_rate=0.2, max_depth=12, min_child_weight=4, n_estimators=150)
-m.fit(X_train_rf, y_train)
-y_pred_test = m.predict(X_test_rf)
+XGB_RS = RandomizedSearchCV(xgb.XGBRegressor(), param_distributions=param_dist, n_iter=150, verbose=10, n_jobs=64)
+XGB_RS.fit(X_train_rf, y_train)
 
-x = get_model_stats('a', y_test, y_pred_test)
-from scipy import stats
-
-
+print("\n========================================================")
+print(" Results from Random Search ")
+print("========================================================")
+print("\n The best estimator across ALL searched params:\n", XGB_RS.best_estimator_)
+print("\n The best score across ALL searched params:\n", XGB_RS.best_score_)
+print("\n The best parameters across ALL searched params:\n", XGB_RS.best_params_)
+print("\n ========================================================")

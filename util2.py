@@ -26,7 +26,7 @@ from sklearn.compose import ColumnTransformer
 
 
 def remove_outlier(df, var):
-    return df[np.abs(df[var] - df[var].mean()) < 5 * df[var].std()]
+    return df[np.abs(df[var] - df[var].mean()) < 10 * df[var].std()]
 
 
 def get_data():
@@ -42,18 +42,21 @@ def get_data():
     df = df.drop(
         ["ASSESSMENT_SUBNBHD", "SALEDATE", "STYLE", "GRADE",  "EXTWALL", "ROOF", "INTWALL", "CMPLX_NUM",
          "USECODE","BLDG_NUM",
-         "LIVING_GBA", "CITY", "STATE", "X", "Y",
+         "LIVING_GBA", "CITY", "STATE",
          "NATIONALGRID"], axis=1)
 
     df = df[df["HEAT"] != 'No Data']
-    df = df[df["PRICE"] < 800000]
-    df = df[df["PRICE"] > 50000]
+
+    num_df_list = list(df.select_dtypes(include=['float64', 'int64']))
 
 
+
+    for a in num_df_list:
+        df = remove_outlier(df, a)
 
     df = remove_outlier(df, "FIREPLACES")
     df = remove_outlier(df, "LANDAREA")
-
+    df[['PRICE', 'ASSESSMENT_NBHD']].groupby('ASSESSMENT_NBHD').median()
     # data process
     # Some feature engineering
     df['FEAT_BEDROOMS_PER_ROOM'] = df['BEDRM'] / df['ROOMS']
@@ -84,3 +87,4 @@ def get_model_stats(name, y_true, y_pred):
         "max_error": metrics.max_error(y_true, y_pred)
     }
     return stats
+

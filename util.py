@@ -77,7 +77,6 @@ def get_data():
 def get_model_stats(name, y_true, y_pred):
     stats = {
         "name": name,
-        "EV": metrics.explained_variance_score(y_true, y_pred),
         "MAE": metrics.mean_absolute_error(y_true, y_pred),
         "r2": metrics.r2_score(y_true, y_pred),
         "RMSE": np.sqrt(metrics.mean_squared_error(y_true, y_pred)),
