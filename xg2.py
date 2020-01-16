@@ -47,5 +47,5 @@ param_dist = {"learning_rate": uniform(0, 1),
               "n_estimators": range(1, 300),
               "min_child_weight": range(1, 10)}
 
-XGB_RS = RandomizedSearchCV(xgb.XGBRegressor(), param_distributions=param_dist, n_iter=150)
+XGB_RS = RandomizedSearchCV(xgb.XGBRegressor(), param_distributions=param_dist, n_iter=150, verbose=10, n_jobs= 4)
 XGB_RS.fit(X_train_rf, y_train)
