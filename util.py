@@ -68,8 +68,8 @@ def get_data():
 
     df.dropna(subset=['QUADRANT'],inplace= True)
     df.dropna(subset=['FEAT_BEDROOMS_PER_ROOM'],inplace= True)
-    df.dropna(subset=['AYB'],inplace= True)
-    df.dropna(subset=['EYB'],inplace= True)
+    #df.dropna(subset=['AYB'],inplace= True)
+    #df.dropna(subset=['EYB'],inplace= True)
 
     return df
 

@@ -50,3 +50,4 @@ x = get_model_stats('a', y_test, y_pred_test)
 from scipy import stats
 
 
+print(df.shape)
